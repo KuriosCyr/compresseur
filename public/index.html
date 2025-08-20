@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="icon" type="image/ico" href="favicon.ico" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Constructeur 360 PIK</title>
+    <style>
+        body {
+            padding: 3%;
+        }
+
+        #uploadedImages img {
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .custom-file-upload {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-upload-label {
+            padding: 10px 30px;
+            background: #007BFF;
+            color: #FFFFFF;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .file-upload-input {
+            display: none; /* Cache l'input d'origine */
+        }
+
+        .file-upload-name {
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+    
+    <style>
+        #image-preview .image-container .delete-icon:hover {
+            color: red !important;
+        }
+    </style>
+    <style>
+        .draggable-area {
+            border: 2px dashed #007BFF;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .draggable-image {
+            width: 100px;
+            margin: 5px;
+            cursor: move;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <div id="app" class="container">
+        <h1 class="mb-4">Constructeur 360 PIK : Redimensionnement Multiple</h1>
+        <form action="/upload-photos" method="post" enctype="multipart/form-data" name="uploadForm">
+            <!--<div class="form-group">-->
+                <!--    <label>-->
+                    <!--        <input type="radio" name="type" value="PRODUCT" checked> Images produits-->
+                    <!--    </label>-->
+                    <!--    <label>-->
+                        <!--        <input type="radio" name="type" value="DETAILS"> Images détails-->
+                        <!--    </label>-->
+                        <!--</div>-->
+
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="width" required placeholder="Largeur maximale">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="height" required placeholder="Hauteur maximale">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="qualityInput" min="1" max="100" class="form-control" name="quality" required placeholder="Taux de qualité">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="productName" required placeholder="Nom du fichier compressé">
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-file-upload">
+                                <label for="uploadedImages" class="file-upload-label">
+                                    Sélectionnez vos photos
+                                    <input type="file" id="uploadedImages" class="file-upload-input" @change="previewImages" multiple accept="image/*">
+                                </label>
+                            </div>
+                            <div class="draggable-area">
+    <draggable v-model="images" class="row" group="image-preview" v-bind="dragOptions">
+        <div v-for="(image, index) in images" :key="index" class="col-md-3">
+            <img :src="image" class="draggable-image">
+        </div>
+    </draggable>
+</div>
+
+
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="renameCheckbox" name="renameImages" value="true"> Renommer les photos
+                            </label>
+                            <label>
+                                <input type="text" class="form-control" id="productNameInput" name="customProductName" value="Nom des photos" readonly>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-primary btn-lg" value="Télécharger">
+                        </div>
+                    </form>
+                    <hr />
+                </div>
+                <!-- Scripts Vue.js et vuedraggable -->
+                <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.24.3/vuedraggable.umd.min.js"></script>
+                <!-- Script Vue.js personnalisé -->
+                <script>
+                    new Vue({
+                        el: '#app',
+                        data: {
+    images: [],
+    dragOptions: {
+        group: 'image-preview',
+    },
+},
+
+
+                        methods: {
+                            previewImages(event) {
+                                this.images = [];
+                                for (let file of event.target.files) {
+                                    let reader = new FileReader();
+                                    reader.onload = (e) => {
+                                        this.images.push(e.target.result);
+                    console.log(this.images); // Ajout de cette ligne pour le débogage
+                    console.log(Array.isArray(this.images)); // Cela devrait afficher 'true' si images est un tableau
+
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    }
+});
+
+</script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Vos scripts jQuery personnalisés -->
+<script src="app.js" async="true"></script>
+<script>
+    document.getElementById('renameCheckbox').addEventListener('change', function() {
+        var productNameInput = document.getElementById('productNameInput');
+        if (this.checked) {
+            productNameInput.removeAttribute('readonly');
+                productNameInput.value = ''; // Clear the default text when checkbox is checked
+            } else {
+                productNameInput.setAttribute('readonly', true);
+                productNameInput.value = 'Nom des photos'; // Reset to default text when checkbox is unchecked
+            }
+        });
+    </script>
+    <script>
+        document.getElementById('qualityInput').addEventListener('change', function() {
+            let value = this.value;
+            if (value < 1 || value > 100) {
+                this.value = 1;
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#uploadedImages').change(function() {
+        $('#image-preview').html(""); // Clear the preview zone
+        for (let i = 0; i < this.files.length; i++) {
+            // Create an image element and set its source to the selected file
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#image-preview').append('<img src="' + e.target.result + '" style="width: 100px; margin: 5px;" />');
+            }
+            reader.readAsDataURL(this.files[i]);
+        }
+    });
+        });
+    </script>
+
+    <script src="https://unpkg.com/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

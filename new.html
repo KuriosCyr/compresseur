@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="icon" type="image/ico" href="favicon.ico" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>Multiple File Upload With ExpressJS 3.x</title>
+    <style>
+        body {
+            padding: 3%;
+        }
+
+        #uploadedImages img {
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .custom-file-upload {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-upload-label {
+            padding: 10px 30px;
+            background: #007BFF;
+            color: #FFFFFF;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .file-upload-input {
+            display: none; /* Cache l'input d'origine */
+        }
+
+        .file-upload-name {
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="mb-4">Constructeur 360 PIK : Redimensionnement Multiple</h1>
+        <form action="/upload-photos" method="post" enctype="multipart/form-data" name="uploadForm">
+            <div class="form-group">
+                <input type="text" class="form-control" name="width" required placeholder="MaxWidth">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="height" required placeholder="MaxHeight">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="quality" required placeholder="Quality">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="productName" required placeholder="Nom du produit">
+            </div>
+            <div class="form-group">
+                <div class="custom-file-upload">
+                    <label for="uploadedImages" class="file-upload-label">
+                        Sélectionnez vos images
+                        <input type="file" id="uploadedImages" class="file-upload-input" name="uploadedImages" multiple="multiple" accept="image/*">
+                    </label>
+                </div>
+                <div id="image-preview" class="mt-3"></div>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary btn-lg" value="Upload">
+            </div>
+        </form>
+        <hr />
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="app.js" async="true"></script>
+    <script>
+        $(document).ready(function() {
+            $('#uploadedImages').change(function() {
+        $('#image-preview').html(""); // Clear the preview zone
+        for (let i = 0; i < this.files.length; i++) {
+            // Create an image element and set its source to the selected file
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#image-preview').append('<img src="' + e.target.result + '" style="width: 100px; margin: 5px;" />');
+            }
+            reader.readAsDataURL(this.files[i]);
+        }
+    });
+        });
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
