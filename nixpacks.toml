@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["nodejs", "npm", "ffmpeg", "pkg-config", "cairo", "pango", "libjpeg", "giflib", "librsvg", "pixman"]
+nixPkgs = ["nodejs", "ffmpeg", "pkg-config", "cairo", "pango", "libjpeg", "giflib", "librsvg", "pixman"]
 
 [phases.build]
 cmds = ["npm ci"]
