@@ -1,20 +1,17 @@
-FROM node:18-alpine
+FROM node:18
 
-# Install FFmpeg and all dependencies for canvas
-RUN apk add --no-cache \
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
     ffmpeg \
-    cairo-dev \
-    jpeg-dev \
-    pango-dev \
-    giflib-dev \
-    librsvg-dev \
-    pixman-dev \
-    musl-dev \
-    gcc \
+    libcairo2-dev \
+    libjpeg-dev \
+    libpango1.0-dev \
+    libgif-dev \
+    librsvg2-dev \
+    libpixman-1-dev \
+    build-essential \
     g++ \
-    make \
-    python3 \
-    pkgconfig
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
