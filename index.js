@@ -263,19 +263,18 @@ app.post('/api/upload-photos', upload.array('uploadedImages'), async (req, res) 
 
 
 async function resizeImages(images, quality) {
-  const resizeImages = [];
   try {
-    for (const image of images) {
+    const resized = await Promise.all(images.map(async (image) => {
       const base64Image = image.split(';base64,').pop();
       const buffer = Buffer.from(base64Image, 'base64');
       const compressedBuffer = await sharp(buffer)
         .jpeg({
-          quality: Math.round(quality * 100), // quality is expected to be between 0 and 100 in sharp
+          quality: Math.round(quality * 100),
         })
         .toBuffer();
-      resizeImages.push(`data:image/jpeg;base64,${compressedBuffer.toString('base64')}`);
-    }
-    return resizeImages;
+      return `data:image/jpeg;base64,${compressedBuffer.toString('base64')}`;
+    }));
+    return resized;
   } catch (error) {
     console.error("Error compressing images:", error);
     throw error;
@@ -283,19 +282,18 @@ async function resizeImages(images, quality) {
 }
 
 async function resizeLargeImages(large, quality) {
-  const resizedLargeImages = [];
   try {
-    for (const largeImage of large) {
+    const resized = await Promise.all(large.map(async (largeImage) => {
       const base64Image = largeImage.split(';base64,').pop();
       const buffer = Buffer.from(base64Image, 'base64');
       const compressedBuffer = await sharp(buffer)
         .jpeg({
-          quality: Math.round(quality * 100), // quality is expected to be between 0 and 100 in sharp
+          quality: Math.round(quality * 100),
         })
         .toBuffer();
-      resizedLargeImages.push(`data:image/jpeg;base64,${compressedBuffer.toString('base64')}`);
-    }
-    return resizedLargeImages;
+      return `data:image/jpeg;base64,${compressedBuffer.toString('base64')}`;
+    }));
+    return resized;
   } catch (error) {
     console.error("Error compressing large images:", error);
     throw error;
@@ -387,8 +385,10 @@ app.post('/api/generate-animation', async (req, res) => {
     const downloadedImages = await downloadAndSaveImages(currentFolder.images, tempImagesDir);
 
     if (currentFolder.animationGifVideo) {
-      await generateVideo(downloadedImages, quality, frameTime, rotation, outputVideoFilename);
-      await generateGif(downloadedImages, frameTime, quality, outputGifFilename);
+      await Promise.all([
+        generateVideo(downloadedImages, quality, frameTime, rotation, outputVideoFilename),
+        generateGif(downloadedImages, frameTime, quality, outputGifFilename)
+      ]);
 
       zip.file(`${filename}.mp4`, fs.readFileSync(outputVideoFilename));
       zip.file(`${filename}.gif`, fs.readFileSync(outputGifFilename));
@@ -595,8 +595,10 @@ app.post('/api/generate-animation-demo', async (req, res) => {
     const tempGifFilePath = path.join(tempDir.path, outputGifFilename);
     const tempVideoFilePath = path.join(tempDir.path, outputVideoFilename);
     // Remarque que je suis en train d'utiliser base64Large ici.
-    await generateGifDemo(base64Images, frameTime, quality, tempGifFilePath);
-    await generateVideoDemo(base64Images, frameTime, tempVideoFilePath);
+    await Promise.all([
+      generateGifDemo(base64Images, frameTime, quality, tempGifFilePath),
+      generateVideoDemo(base64Images, frameTime, tempVideoFilePath)
+    ]);
 
 
 
