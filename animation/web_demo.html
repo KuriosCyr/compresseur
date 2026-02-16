@@ -46,12 +46,11 @@
         }
         .spritescontainer {
           cursor: grab;
+          width: 100%;
+          height: auto;
+          max-height: 80vh;
+          margin-top: 1%;
       }
-      .spritescontainer {
-        width: 100%;
-        height: auto;
-        margin-top: 1%;  // Ajoute une marge de 1% en haut
-    }
 
     .spritescontainer:active {
       cursor: grabbing;
@@ -440,6 +439,7 @@ el.children(".spritescontainer").spritespin({
     sourceZoom: imagesLarge,
     sizeMode: 'fit',
     width: width,
+    height: height,
     responsive: true,
     animate: false,
     frameTime: config.frameTime,
@@ -476,20 +476,16 @@ el.children(".spritescontainer").spritespin({
         if (imagesDetails.length > 0 && idx != -1) {
             $('#thumb').css({
                 "background-image": `url("${imagesDetails[idx]}")`,
-                "background-size": "cover",        
-                "background-position": "center",   
+                "background-size": "cover",
+                "background-position": "center",
                 "background-repeat": "no-repeat",
-                "background-color": foreground 
+                "background-color": foreground
             });
         }
-        // const idx = items.indexOf(data.frame);
-        // if (imagesDetails.length > 0 && idx != -1) {
-        //     $('#thumb').css("background-image", `url("${imagesDetails[idx]}")`);
-        // }
     },
     onInit: function (e, data) {
         const initialRotations = parseInt($(".spritescontainer").data("initial-rotations"), 10) || 0;
-        if (initialRotations > 0) { // Modification ici
+        if (initialRotations > 0) {
             el.children('.spritescontainer').spritespin('api').startAnimation();
         }
         $('.spritespin-slider')
@@ -507,79 +503,6 @@ el.children(".spritescontainer").spritespin({
             });
     }
 });
-
-// let isSliderBeingUsed = false;
-// const step = Math.trunc(smallImages.length / imagesDetails.length);
-// const items = Array.from({length: imagesDetails.length}, (_, i) => i * step);
-// let rotationsCounter = 0;
-// el.children(".spritescontainer").spritespin({
-//     source: imagesLarge,
-//     sourceZoom: imagesLarge,
-//     sizeMode: 'fit',        
-//     height: height,
-//     width: width,
-//     responsive: true,
-//     animate: false,
-//     frameTime: config.frameTime,
-//     reverse: inverse ? true : false,
-//     zoomUseWheel: false,
-//     zoomUseClick: false,
-//     wrap: true,
-//     plugins: ['progress', '360', 'drag'],
-//     sense: inverse ? 1 : -1,
-//     onFrame: function (e, data) {
-//         // Augmenter le compteur de rotations à chaque fois qu'on passe par la première image
-//         if (data.frame === 0) {
-//             rotationsCounter++;
-//         }
-//         // Arrêter l'animation après le nombre spécifié de rotations
-//         const initialRotations = parseInt($(".spritescontainer").data("initial-rotations"), 10) || 0;
-//         if (initialRotations !== 0 && rotationsCounter > initialRotations) {
-//             el.children('.spritescontainer').spritespin('api').stopAnimation();
-//             rotationsCounter = 0;
-//         }
-
-//     // set the descriptions
-//         let descriptionEl = el.children(".description-label");
-//         const frame= Number(data.frame)+1;
-//         descriptions.forEach(element => {
-//           if (frame >= element.start && frame <= element.end) {
-//             descriptionEl.text(element.description);
-//         }
-//     });
-
-//         $('.spritespin-slider').val(data.frame);
-
-//         if (smallImages.length > 0) {
-//           $('#count').text(`${frame} / ${smallImages.length}`);
-//       }
-//       const idx = items.indexOf(data.frame);
-//     // console.log(imagesDetails.length > 0 && idx != -1);
-//       if (imagesDetails.length > 0 && idx != -1) {
-//           $('#thumb').css("background-image", `url("${imagesDetails[idx]}")`);
-//       }
-//   }, // fermez la fonction 'onFrame' ici
-//   onInit: function(e, data) {
-//     // Ajoutez ces lignes pour appliquer les rotations initiales
-//     const initialRotations = parseInt($(".spritescontainer").data("initial-rotations"), 10) || 0;
-//     if (initialRotations >= 0) {
-//         el.children('.spritescontainer').spritespin('api').startAnimation();
-//     }
-//     $('.spritespin-slider')
-//     .attr("min", 0)
-//     .attr("max", data.source.length - 1)
-//     .attr("value", 0)
-//     .on("mousedown", function() {
-//         isSliderBeingUsed = true;
-//     })
-//     .on("mouseup", function() {
-//         isSliderBeingUsed = false;
-//     })
-//     .on("input", function(e) {
-//         SpriteSpin.updateFrame(data, e.target.value);
-//     });
-// }
-// });
 }
 function render360() {
     $('.360spin').each(function (index) {

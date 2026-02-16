@@ -448,15 +448,11 @@ app.post('/api/generate-animation', async (req, res) => {
     console.log("Vérification finale : solde_restant_informations_confidentielles.txt est toujours présent dans le zip.");
 
     // Génération du fichier ZIP et réponse
-    zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true })
-      .pipe(res)
-      .on('finish', function () {
-        console.log(`${filename}.zip généré avec succès, incluant solde_restant_informations_confidentielles.txt`);
-      })
-      .on('error', function (error) {
-        console.error("Erreur lors de la génération du fichier ZIP :", error);
-        res.status(500).json({ success: false, message: "Erreur lors de la génération de l'animation", logs: [error.message] });
-      });
+    const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+    res.set('Content-Length', zipBuffer.length);
+    res.set('Content-Type', 'application/zip');
+    res.send(zipBuffer);
+    console.log(`${filename}.zip envoyé (${zipBuffer.length} bytes).`);
 
   } catch (error) {
     console.error("Erreur lors de la génération de l'animation:", error);
@@ -667,11 +663,11 @@ app.post('/api/generate-animation-demo', async (req, res) => {
       }
     }
 
-    zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true })
-      .pipe(res)
-      .on('finish', function () {
-        console.log(`${filename}.zip written.`);
-      });
+    const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+    res.set('Content-Length', zipBuffer.length);
+    res.set('Content-Type', 'application/zip');
+    res.send(zipBuffer);
+    console.log(`${filename}.zip sent (${zipBuffer.length} bytes).`);
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("An error occurred while generating the zip file.");
